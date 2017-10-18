@@ -16,6 +16,8 @@ namespace Assignment
     public partial class Form1 : Form
     {
 
+        Bitmap bm = new Bitmap(@"C:\test.jpg");
+        //Graphics g5;
         private const int MAX = 256;
         //  max iterations
         private const double SX = -2.025;
@@ -30,292 +32,241 @@ namespace Assignment
         private static int x1, y1, xs, ys, xe, ye;
         private static double xstart, ystart, xende, yende, xzoom, yzoom;
 
-
-
         private static bool action, rectangle, finished;
         private static float xy;
-        private Image picture;
+        // private Bitmap picture = new Bitmap(@"C:\S13.png");
+        private Bitmap picture;
 
-        private Graphics g1;
-
-
-
-        public HSB HSBcol = new HSB();
+        public HSBColor HSBcol = new HSBColor();
         Rectangle rec = new Rectangle(0, 0, 0, 0);
 
-        bool PressedMouse = false;
+        private Graphics g1;
 
 
         public Form1()
         {
             InitializeComponent();
-            init();
-            start();
+
         }
 
-
-        /* private void Form1_Paint(object sender, PaintEventArgs e)
-         {
-             this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form1_Paint);
-             //put bitmap on window
-             // Graphics g = e.Graphics;
-             //g.DrawImageUnscaled(bm, 0, 0);
-
-         }*/
-
-        public class HSB
+        public struct HSBColor
         {
+            float h;
+            float s;
+            float b;
+            int a;
 
-            // djm added, it makes it simpler to have this code in here than in the C#
-            public float rChan;
-
-            public float gChan;
-
-            public float bChan;
-
-            public HSB()
+            public HSBColor(float h, float s, float b)
             {
-                this.rChan = 0;
-                this.gChan = 0;
-                this.bChan = 0;
-
+                this.a = 0xff;
+                this.h = Math.Min(Math.Max(h, 0), 255);
+                this.s = Math.Min(Math.Max(s, 0), 255);
+                this.b = Math.Min(Math.Max(b, 0), 255);
+            }
+            public HSBColor(int a, float h, float s, float b)
+            {
+                this.a = a;
+                this.h = Math.Min(Math.Max(h, 0), 255);
+                this.s = Math.Min(Math.Max(s, 0), 255);
+                this.b = Math.Min(Math.Max(b, 0), 255);
             }
 
-            public void FromHSB(float h, float s, float b)
+
+            public static Color FromHSB(HSBColor hsbColor)
             {
-                float red = b;
-                float green = b;
-                float blue = b;
-                if ((s != 0))
+                float r = hsbColor.b;
+                float g = hsbColor.b;
+                float b = hsbColor.b;
+                if (hsbColor.s != 0)
                 {
-                    float max = b;
-                    float dif = (b
-                                * (s / 255));
-                    float min = (b - dif);
-                    float h2 = (h * (360 / 255));
-                    if ((h2 < 60))
+                    float max = hsbColor.b;
+                    float dif = hsbColor.b * hsbColor.s / 255f;
+                    float min = hsbColor.b - dif;
+
+                    float h = hsbColor.h * 360f / 255f;
+
+                    if (h < 60f)
                     {
-                        red = max;
-                        green = ((h2
-                                    * (dif / 60))
-                                    + min);
-                        blue = min;
+                        r = max;
+                        g = h * dif / 60f + min;
+                        b = min;
                     }
-                    else if ((h2 < 120))
+                    else if (h < 120f)
                     {
-                        red = ((((h2 - 120)
-                                    * (dif / 60))
-                                    * -1)
-                                    + min);
-                        green = max;
-                        blue = min;
+                        r = -(h - 120f) * dif / 60f + min;
+                        g = max;
+                        b = min;
                     }
-                    else if ((h2 < 180))
+                    else if (h < 180f)
                     {
-                        red = min;
-                        green = max;
-                        blue = (((h2 - 120)
-                                    * (dif / 60))
-                                    + min);
+                        r = min;
+                        g = max;
+                        b = (h - 120f) * dif / 60f + min;
                     }
-                    else if ((h2 < 240))
+                    else if (h < 240f)
                     {
-                        red = min;
-                        green = ((((h2 - 240)
-                                    * (dif / 60))
-                                    * -1)
-                                    + min);
-                        blue = max;
+                        r = min;
+                        g = -(h - 240f) * dif / 60f + min;
+                        b = max;
                     }
-                    else if ((h2 < 300))
+                    else if (h < 300f)
                     {
-                        red = (((h2 - 240)
-                                    * (dif / 60))
-                                    + min);
-                        green = min;
-                        blue = max;
+                        r = (h - 240f) * dif / 60f + min;
+                        g = min;
+                        b = max;
                     }
-                    else if ((h2 <= 360))
+                    else if (h <= 360f)
                     {
-                        red = max;
-                        green = min;
-                        blue = ((((h2 - 360)
-                                    * (dif / 60))
-                                    * -1)
-                                    + min);
+                        r = max;
+                        g = min;
+                        b = -(h - 360f) * dif / 60 + min;
                     }
                     else
                     {
-                        red = 0;
-                        green = 0;
-                        blue = 0;
+                        r = 0;
+                        g = 0;
+                        b = 0;
                     }
-
                 }
 
-                this.rChan = (float)Math.Round(Math.Min(Math.Max(red, 0), 255));
-                this.gChan = (float)Math.Round(Math.Min(Math.Max(green, 0), 255));
-                this.bChan = (float)Math.Round(Math.Min(Math.Max(blue, 0), 255));
-            }
 
+                return Color.FromArgb
+                    (
+                        hsbColor.a,
+                        (int)Math.Round(Math.Min(Math.Max(r, 0), 255)),
+                        (int)Math.Round(Math.Min(Math.Max(g, 0), 255)),
+                        (int)Math.Round(Math.Min(Math.Max(b, 0), 255))
+                     );
+
+            }
         }
 
-            private Cursor c1, c2;
+        private void Form1_Paint(object sender, PaintEventArgs e)
+        {
+            //put bitmap on window
+            Graphics g5 = e.Graphics;
+            // g5.DrawImage(bm, 0, 0, x1, y1);
+            g1 = e.Graphics;
+            g1.DrawImage(picture, 0, 0, x1, y1);
 
-            private void Form1_Paint(object sender, PaintEventArgs e)
-            {
-                //Paint bitmap on load
-                g1 = e.Graphics;
-                g1.DrawImage(picture, 0, 0, x1, y1);
-                g1.Dispose();
-            }
+        }
 
         private void Form1_Load(object sender, EventArgs e)
         {
             init();
             start();
-            mandelbrot();
+            Paint += new PaintEventHandler(Form1_Paint);
         }
 
-
         public void init()
+        {
+            finished = false;
+            x1 = 640;
+            y1 = 480;
+            xy = (float)x1 / (float)y1;
+            picture = new Bitmap(x1, y1);
+            g1 = Graphics.FromImage(picture);
+
+        }
+
+        public void start()
+        {
+            action = false;
+            rectangle = false;
+            initvalues();
+            xzoom = (xende - xstart) / (double)x1;
+            yzoom = (yende - ystart) / (double)y1;
+            Mandelbrot();
+        }
+
+        public void stop()
+        {
+        }
+
+        public void paint(Graphics g)
+        {
+            update(g);
+        }
+
+        public void update(Graphics g)
+        {
+            g1.DrawImage(picture, 0, 0);
+            if (rectangle)
             {
-
-                // HSBcol = new HSB();
-
-                finished = false;
-                //addMouseListener(this);
-                //addMouseMotionListener(this);
-                //this.c1 = new Cursor(Cursor.WAIT_CURSOR);
-                //this.c2 = new Cursor(Cursor.CROSSHAIR_CURSOR);
-                x1 = 480;
-                y1 = 680;
-                xy = (float)x1 / (float)y1;
-                //picture = createImage(x1, y1);
-                picture = new Bitmap(x1, y1);
-                g1 = Graphics.FromImage(picture);
-                finished = true;
-            }
-
-            public void destroy() // delete all instances 
-            {
-                if (finished)
+                Pen pen = new Pen(System.Drawing.Color.White);
+                if (xs < xe)
                 {
-                    //removeMouseListener(this);
-                    //removeMouseMotionListener(this);
-                    //picture = null;
-                    g1 = null;
-                    c1 = null;
-                    c2 = null;
-                    GC.Collect(); // garbage collection
+                    if (ys < ye) g1.DrawRectangle(pen, xs, ys, (xe - xs), (ye - ys));
+                    else g1.DrawRectangle(pen, xs, ye, (xe - xs), (ys - ye));
+                }
+                else
+                {
+                    if (ys < ye) g1.DrawRectangle(pen, xe, ys, (xs - xe), (ye - ys));
+                    else g1.DrawRectangle(pen, xe, ye, (xs - xe), (ys - ye));
                 }
             }
+        }
 
-            public void start()
-            {
-                action = false;
-                rectangle = false;
-                initvalues();
-                xzoom = (xende - xstart) / (double)x1;
-                yzoom = (yende - ystart) / (double)y1;
-                mandelbrot();
-            }
+        private void Mandelbrot() // calculate all points
+        {
+            int x, y;
+            float h, b;//, alt = 0.0f;
 
-            public void stop()
-            {
-            }
-
-
-            public void paint(Graphics g)
-            {
-                update(g);
-            }
-
-            public void update(Graphics g)
-            {
-                /* g.drawImage(picture, 0, 0, this);
-                if (rectangle)
+            action = false;
+            //setCursor(c1);
+            //showStatus("Mandelbrot-Set will be produced - please wait...");
+            for (x = 0; x < x1; x += 2)
+                for (y = 0; y < y1; y++)
                 {
-                    g.setColor(Color.white);
-                    if (xs < xe)
+                    h = pointcolour(xstart + xzoom * (double)x, ystart + yzoom * (double)y);
+                    b = 1.0f - h * h; //brightness of the mandelbrot
+                    Color color = HSBColor.FromHSB(new HSBColor(h * 255, 0.8f * 255, b * 255));
+                    Pen pen = new Pen(color);
+
+                    // Is essentially java code, not needed to produce the mandelbrot correctly
+                    /*if (h != alt)
                     {
-                        if (ys < ye) g.drawRect(xs, ys, (xe - xs), (ye - ys));
-                        else g.drawRect(xs, ye, (xe - xs), (ys - ye));
-                    }
-                    else
-                    {
-                        if (ys < ye) g.drawRect(xe, ys, (xs - xe), (ye - ys));
-                        else g.drawRect(xe, ye, (xs - xe), (ys - ye));
-                    }
+                        b = 1.0f - h * h; // brightness
+                        //Color background = HSBColor.FromHSB(new HSBColor(h, 0.8f, b));
+                        //g1.FillRegion
+                        Color color = HSBColor.FromHSB(new HSBColor(h * 255, 0.8f * 255, b * 255)); 
+                        
+                        alt = h;
+                        Pen pen = new Pen(color);
+                        g1.DrawLine(pen, x, y, x + 1, y);
+                    }*/
+
+                    g1.DrawLine(pen, x, y, x + 1, y);
                 }
-                */
-            }
+            //showStatus("Mandelbrot-Set ready - please select zoom area with pressed mouse.");
+            //setCursor(c2);
+            action = true;
+        }
 
-            private void mandelbrot() // calculate all points
+        private float pointcolour(double xwert, double ywert) // color value from 0.0 to 1.0 by iterations
+        {
+            double r = 0.0, i = 0.0, m = 0.0;
+            int j = 0;
+
+            while ((j < MAX) && (m < 4.0))
             {
-                int x, y;
-                float h, b, alt = 0.0f;
-
-                action = false;
-                //setCursor(c1);
-                //showStatus("Mandelbrot-Set will be produced - please wait...");
-                for (x = 0; x < x1; x += 2)
-                    for (y = 0; y < y1; y++)
-                    {
-                        h = pointcolour(xstart + xzoom * (double)x, ystart + yzoom * (double)y); // color value
-                        if (h != alt)
-                        {
-                            b = 1.0f - h * h; // brightnes
-                                              ///djm added
-                                              ///HSBcol.fromHSB(h,0.8f,b); //convert hsb to rgb then make a Java Color
-                                              ///Color col = new Color(0,HSBcol.rChan,HSBcol.gChan,HSBcol.bChan);
-                                              ///g1.setColor(col);
-                            //djm end
-                            //djm added to convert to RGB from HSB
-
-                            // g1.setColor(Color.getHSBColor(h, 0.8f, b));
-                            //djm test
-                            // Color col = Color.getHSBColor(h, 0.8f, b);
-                            // int red = col.getRed();
-                            // int green = col.getGreen();
-                            // int blue = col.getBlue();
-                            //djm 
-                            alt = h;
-                        }
-                        Pen penline = new Pen(System.Drawing.Color.Red);
-                        g1.DrawLine(penline, x, y, x + 1, y);
-                    }
-                //showStatus("Mandelbrot-Set ready - please select zoom area with pressed mouse.");
-                //setCursor(c2);
-                action = true;
+                j++;
+                m = r * r - i * i;
+                i = 2.0 * r * i + ywert;
+                r = m + xwert;
             }
+            return (float)j / (float)MAX;
+        }
 
-            private float pointcolour(double xwert, double ywert) // color value from 0.0 to 1.0 by iterations
-            {
-                double r = 0.0, i = 0.0, m = 0.0;
-                int j = 0;
-
-                while ((j < MAX) && (m < 4.0))
-                {
-                    j++;
-                    m = r * r - i * i;
-                    i = 2.0 * r * i + ywert;
-                    r = m + xwert;
-                }
-                return (float)j / (float)MAX;
-            }
-
-            private void initvalues() // reset start values
-            {
-                xstart = SX;
-                ystart = SY;
-                xende = EX;
-                yende = EY;
-                if ((float)((xende - xstart) / (yende - ystart)) != xy)
-                    xstart = xende - (yende - ystart) * (double)xy;
-            }
-        
-
+        private void initvalues() // reset start values
+        {
+            xstart = SX;
+            ystart = SY;
+            xende = EX;
+            yende = EY;
+            if ((float)((xende - xstart) / (yende - ystart)) != xy)
+                xstart = xende - (yende - ystart) * (double)xy;
+        }
 
     }
 }
