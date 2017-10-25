@@ -16,7 +16,7 @@ namespace Assignment
     public partial class Form1 : Form
     {
 
-        Bitmap bm = new Bitmap(@"C:\test.jpg");
+        //Bitmap bm = new Bitmap(@"C:\test.jpg");
         //Graphics g5;
         private const int MAX = 256;
         //  max iterations
@@ -33,6 +33,7 @@ namespace Assignment
         private static double xstart, ystart, xende, yende, xzoom, yzoom;
 
         private static bool action, rectangle, finished;
+        private static bool mousedragged = false;
         private static float xy;
         // private Bitmap picture = new Bitmap(@"C:\S13.png");
         private Bitmap picture;
@@ -41,11 +42,14 @@ namespace Assignment
         Rectangle rec = new Rectangle(0, 0, 0, 0);
 
         private Graphics g1;
+        private Graphics g2;
 
 
         public Form1()
         {
             InitializeComponent();
+            // this reduces the flickering
+            this.DoubleBuffered = true;
 
         }
 
@@ -144,18 +148,49 @@ namespace Assignment
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
             //put bitmap on window
-            Graphics g5 = e.Graphics;
+            //Graphics g5 = e.Graphics;
             // g5.DrawImage(bm, 0, 0, x1, y1);
             g1 = e.Graphics;
             g1.DrawImage(picture, 0, 0, x1, y1);
 
+            if (rectangle == true)
+            {
+                using (Pen pen = new Pen(Color.White, 2))
+                {
+                    g1.DrawRectangle(pen, rec);
+                    
+                }
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
+
             init();
             start();
             Paint += new PaintEventHandler(Form1_Paint);
+
+        }
+
+        private void saveImageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var fd = new SaveFileDialog();
+            fd.Filter = "png(*.png;)|*.png;| jpg(*jpg)|*.jpg";
+            fd.AddExtension = true;
+            if (fd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                switch (Path.GetExtension(fd.FileName).ToUpper())
+                {
+                    case ".JPG":
+                        picture.Save(fd.FileName, System.Drawing.Imaging.ImageFormat.Jpeg);
+                        break;
+                    case ".PNG":
+                        picture.Save(fd.FileName, System.Drawing.Imaging.ImageFormat.Png);
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
 
         public void init()
@@ -166,6 +201,7 @@ namespace Assignment
             xy = (float)x1 / (float)y1;
             picture = new Bitmap(x1, y1);
             g1 = Graphics.FromImage(picture);
+            finished = true;
 
         }
 
@@ -183,27 +219,29 @@ namespace Assignment
         {
         }
 
-        public void paint(Graphics g)
+        public void paint(Graphics g1)
         {
-            update(g);
+            update(g1);
         }
 
-        public void update(Graphics g)
+        public void update(Graphics g1)
         {
-            g1.DrawImage(picture, 0, 0);
-            if (rectangle)
+
+        }
+
+        public void destroy()
+        {
+            if (finished)
             {
-                Pen pen = new Pen(System.Drawing.Color.White);
-                if (xs < xe)
-                {
-                    if (ys < ye) g1.DrawRectangle(pen, xs, ys, (xe - xs), (ye - ys));
-                    else g1.DrawRectangle(pen, xs, ye, (xe - xs), (ys - ye));
-                }
-                else
-                {
-                    if (ys < ye) g1.DrawRectangle(pen, xe, ys, (xs - xe), (ye - ys));
-                    else g1.DrawRectangle(pen, xe, ye, (xs - xe), (ys - ye));
-                }
+                //removeMouseListener(this); not needed
+                //removeMouseMotionListener(this); not needed
+                //picture = null;
+                picture = null;
+                g1 = null;
+                //c1 = null; not needed
+                //c2 = null; not needed
+                //System.gc(); // garbage collection changed
+                GC.Collect(); // garbage collection
             }
         }
 
@@ -211,9 +249,9 @@ namespace Assignment
         {
             int x, y;
             float h, b;//, alt = 0.0f;
-
+            
             action = false;
-            //setCursor(c1);
+            // this.Cursor = Cursor.Cross; //setCursor(c1);
             //showStatus("Mandelbrot-Set will be produced - please wait...");
             for (x = 0; x < x1; x += 2)
                 for (y = 0; y < y1; y++)
@@ -268,5 +306,94 @@ namespace Assignment
                 xstart = xende - (yende - ystart) * (double)xy;
         }
 
+
+        private void Form1_MouseDown(object sender, MouseEventArgs e)
+        {
+            rectangle = true;
+            //MessageBox.Show("Test");
+
+            rec = new Rectangle(e.X, e.Y, 0, 0);
+
+            if (action)
+            {
+                xs = e.X;
+                ys = e.Y;
+                rectangle = true;
+                
+            }
+            this.Invalidate();
+        }
+
+        private void Form1_MouseMove(object sender, MouseEventArgs e)
+        {
+
+            if (e.Button == MouseButtons.Left)
+            {
+                // rec = new Rectangle(rec.Left, rec.Top, e.X - rec.Left, e.Y - rec.Top);
+                rec.Width = e.X - rec.X;
+                rec.Height = e.Y - rec.Y;
+
+                // Re-calibrate on each move operation.
+
+                var point1 = new Point(
+                    Math.Max(0, Math.Min(xs, e.X)),
+                    Math.Max(0, Math.Min(ys, e.Y)));
+
+                var point2 = new Point(
+                    Math.Min(640, Math.Max(xs, e.X)),
+                    Math.Min(480, Math.Max(ys, e.Y)));
+                rec.Location = point1;
+                rec.Size = new Size(point2.X - point1.X, point2.Y - point1.Y);
+                mousedragged = true;
+
+            }
+            this.Invalidate();
+           
+        }
+
+    private void Form1_MouseUp(object sender, MouseEventArgs e)
+    {
+            int z, w;
+            if (mousedragged && action)
+            {
+                
+                xe = e.X;
+                ye = e.Y;
+                if (xs > xe)
+                {
+                    z = xs;
+                    xs = xe;
+                    xe = z;
+                }
+                if (ys > ye)
+                {
+                    z = ys;
+                    ys = ye;
+                    ye = z;
+                }
+                w = (xe - xs);
+                z = (ye - ys);
+                if ((w < 2) && (z < 2)) initvalues();
+                else
+                {
+                    if (((float)w > (float)z * xy)) ye = (int)((float)ys + (float)w / xy);
+                    else xe = (int)((float)xs + (float)z * xy);
+                    xende = xstart + xzoom * (double)xe;
+                    yende = ystart + yzoom * (double)ye;
+                    xstart += xzoom * (double)xs;
+                    ystart += yzoom * (double)ys;
+                }
+                if (e.Button == MouseButtons.Left)
+                {
+                    xzoom = (xende - xstart) / (double)x1;
+                    yzoom = (yende - ystart) / (double)y1;
+                    rectangle = false;
+                    mousedragged = false;
+                    init();
+                    Mandelbrot();
+                    Refresh();
+                }
+            }
+        }
     }
 }
