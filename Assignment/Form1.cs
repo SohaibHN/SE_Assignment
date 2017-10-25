@@ -28,10 +28,8 @@ namespace Assignment
         //  end value real
         private const double EY = 1.125;
         //  end value imaginary
-
         private static int x1, y1, xs, ys, xe, ye;
         private static double xstart, ystart, xende, yende, xzoom, yzoom;
-
         private static bool action, rectangle, finished;
         private static bool mousedragged = false;
         private static float xy;
@@ -42,13 +40,13 @@ namespace Assignment
         Rectangle rec = new Rectangle(0, 0, 0, 0);
 
         private Graphics g1;
-        private Graphics g2;
+        //private Graphics g2;
 
 
         public Form1()
         {
             InitializeComponent();
-            // this reduces the flickering
+            //reduces flickering
             this.DoubleBuffered = true;
 
         }
@@ -172,25 +170,70 @@ namespace Assignment
 
         }
 
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //Create new SafeFileDialog instance
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "txt(*.txt)|*.txt";
+            sfd.AddExtension = true;
+
+            //Display dialog and see if OK button was pressed
+            if (sfd.ShowDialog() == DialogResult.OK)
+            {
+                //Save file to file name specified to SafeFileDialog
+                StreamWriter writer = new StreamWriter(sfd.FileName);
+                //writer.WriteLine("------------ Custom Frame Size --------------");
+                writer.WriteLine(xzoom);
+                writer.WriteLine(yzoom);
+                writer.Close();
+            }
+
+            // close the stream     
+
+        }
+
+        private void loadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Title = "Open Text File";
+            ofd.Filter = "txt|*.txt";
+            ofd.InitialDirectory = @"C:\";
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                string[] lines = System.IO.File.ReadAllLines(ofd.FileName);
+                xzoom = Convert.ToDouble(lines[0]);
+                yzoom = Convert.ToDouble(lines[1]);
+                init();
+                Mandelbrot();
+
+            }
+        }
+
         private void saveImageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var fd = new SaveFileDialog();
-            fd.Filter = "png(*.png;)|*.png;| jpg(*jpg)|*.jpg";
-            fd.AddExtension = true;
-            if (fd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            var sfd = new SaveFileDialog();
+            sfd.Filter = "png(*.png;)|*.png;| jpg(*jpg)|*.jpg";
+            sfd.AddExtension = true;
+            if (sfd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                switch (Path.GetExtension(fd.FileName).ToUpper())
+                switch (Path.GetExtension(sfd.FileName).ToUpper())
                 {
                     case ".JPG":
-                        picture.Save(fd.FileName, System.Drawing.Imaging.ImageFormat.Jpeg);
+                        picture.Save(sfd.FileName, System.Drawing.Imaging.ImageFormat.Jpeg);
                         break;
                     case ".PNG":
-                        picture.Save(fd.FileName, System.Drawing.Imaging.ImageFormat.Png);
+                        picture.Save(sfd.FileName, System.Drawing.Imaging.ImageFormat.Png);
                         break;
                     default:
                         break;
                 }
             }
+        }
+
+        private void resetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            init();
+            start();
         }
 
         public void init()
@@ -219,40 +262,17 @@ namespace Assignment
         {
         }
 
-        public void paint(Graphics g1)
-        {
-            update(g1);
-        }
-
-        public void update(Graphics g1)
-        {
-
-        }
-
         public void destroy()
         {
-            if (finished)
-            {
-                //removeMouseListener(this); not needed
-                //removeMouseMotionListener(this); not needed
-                //picture = null;
-                picture = null;
-                g1 = null;
-                //c1 = null; not needed
-                //c2 = null; not needed
-                //System.gc(); // garbage collection changed
-                GC.Collect(); // garbage collection
-            }
+
         }
 
         private void Mandelbrot() // calculate all points
         {
             int x, y;
-            float h, b;//, alt = 0.0f;
+            float h, b;
             
             action = false;
-            // this.Cursor = Cursor.Cross; //setCursor(c1);
-            //showStatus("Mandelbrot-Set will be produced - please wait...");
             for (x = 0; x < x1; x += 2)
                 for (y = 0; y < y1; y++)
                 {
@@ -260,24 +280,9 @@ namespace Assignment
                     b = 1.0f - h * h; //brightness of the mandelbrot
                     Color color = HSBColor.FromHSB(new HSBColor(h * 255, 0.8f * 255, b * 255));
                     Pen pen = new Pen(color);
-
-                    // Is essentially java code, not needed to produce the mandelbrot correctly
-                    /*if (h != alt)
-                    {
-                        b = 1.0f - h * h; // brightness
-                        //Color background = HSBColor.FromHSB(new HSBColor(h, 0.8f, b));
-                        //g1.FillRegion
-                        Color color = HSBColor.FromHSB(new HSBColor(h * 255, 0.8f * 255, b * 255)); 
-                        
-                        alt = h;
-                        Pen pen = new Pen(color);
-                        g1.DrawLine(pen, x, y, x + 1, y);
-                    }*/
-
                     g1.DrawLine(pen, x, y, x + 1, y);
                 }
-            //showStatus("Mandelbrot-Set ready - please select zoom area with pressed mouse.");
-            //setCursor(c2);
+
             action = true;
         }
 
@@ -309,9 +314,6 @@ namespace Assignment
 
         private void Form1_MouseDown(object sender, MouseEventArgs e)
         {
-            rectangle = true;
-            //MessageBox.Show("Test");
-
             rec = new Rectangle(e.X, e.Y, 0, 0);
 
             if (action)
@@ -321,7 +323,7 @@ namespace Assignment
                 rectangle = true;
                 
             }
-            this.Invalidate();
+            Refresh();
         }
 
         private void Form1_MouseMove(object sender, MouseEventArgs e)
@@ -347,7 +349,7 @@ namespace Assignment
                 mousedragged = true;
 
             }
-            this.Invalidate();
+            Refresh();
            
         }
 
