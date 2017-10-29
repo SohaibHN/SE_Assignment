@@ -18,6 +18,7 @@ namespace Assignment
 
         //Bitmap bm = new Bitmap(@"C:\test.jpg");
         //Graphics g5;
+        private Random rnd = new Random();
         private const int MAX = 256;
         //  max iterations
         private const double SX = -2.025;
@@ -30,17 +31,19 @@ namespace Assignment
         //  end value imaginary
         private static int x1, y1, xs, ys, xe, ye;
         private static double xstart, ystart, xende, yende, xzoom, yzoom;
-        private static bool action, rectangle, finished;
+        private static bool action, rectangle, finished, colourcycle;
         private static bool mousedragged = false;
-        private static float xy;
+        private static float xy, hue, bright, sat;
         // private Bitmap picture = new Bitmap(@"C:\S13.png");
         private Bitmap picture;
+        private Color test;
 
         public HSBColor HSBcol = new HSBColor();
         Rectangle rec = new Rectangle(0, 0, 0, 0);
 
         private Graphics g1;
-        //private Graphics g2;
+        private Graphics g2;
+        private System.Windows.Forms.ColorDialog colorDialog1;
 
 
         public Form1()
@@ -149,6 +152,7 @@ namespace Assignment
             //Graphics g5 = e.Graphics;
             // g5.DrawImage(bm, 0, 0, x1, y1);
             g1 = e.Graphics;
+            g2 = e.Graphics;
             g1.DrawImage(picture, 0, 0, x1, y1);
 
             if (rectangle == true)
@@ -209,6 +213,55 @@ namespace Assignment
             }
         }
 
+        private void colourCyclingToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            
+
+            picture = picture.Clone(new Rectangle(0, 0, picture.Width, picture.Height), PixelFormat.Format8bppIndexed);
+            ColorPalette palette = picture.Palette;
+            palette.Entries[0] = Color.Black;
+            for (int i = 1; i < palette.Entries.Length; i++)
+            {
+                // set to whatever colour here...
+                palette.Entries[i] = Color.FromArgb((i * 7) % 256, (i * 7) % 256, 255);
+                Color randomColor = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
+                palette.Entries[i] = randomColor;
+                //palette.Entries[i] = Color.FromArgb(255, i, i, i);
+
+                picture.Palette = palette;
+                Refresh();
+            }
+            picture.Palette = palette;
+
+
+
+        }
+
+        public Color FromHsv(double hue, double saturation, double value)
+        {
+            int hi = Convert.ToInt32(Math.Floor(hue / 60)) % 6;
+            double f = hue / 60 - Math.Floor(hue / 60);
+            value = value * 255;
+            int v = Convert.ToInt32(value);
+            int p = Convert.ToInt32(value * (1 - saturation));
+            int q = Convert.ToInt32(value * (1 - f * saturation));
+            int t = Convert.ToInt32(value * (1 - (1 - f) * saturation));
+
+            if (hi == 0)
+                return Color.FromArgb(255, v, t, p);
+            else if (hi == 1)
+                return Color.FromArgb(255, q, v, p);
+            else if (hi == 2)
+                return Color.FromArgb(255, p, v, t);
+            else if (hi == 3)
+                return Color.FromArgb(255, p, q, v);
+            else if (hi == 4)
+                return Color.FromArgb(255, t, p, v);
+            else
+                return Color.FromArgb(255, v, p, q);
+        }
+
+
         private void saveImageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var sfd = new SaveFileDialog();
@@ -238,13 +291,11 @@ namespace Assignment
 
         public void init()
         {
-            finished = false;
             x1 = 640;
             y1 = 480;
             xy = (float)x1 / (float)y1;
             picture = new Bitmap(x1, y1);
             g1 = Graphics.FromImage(picture);
-            finished = true;
 
         }
 
@@ -271,19 +322,24 @@ namespace Assignment
         {
             int x, y;
             float h, b;
-            
+            //colourcycle = false;
             action = false;
             for (x = 0; x < x1; x += 2)
                 for (y = 0; y < y1; y++)
                 {
                     h = pointcolour(xstart + xzoom * (double)x, ystart + yzoom * (double)y);
                     b = 1.0f - h * h; //brightness of the mandelbrot
-                    Color color = HSBColor.FromHSB(new HSBColor(h * 255, 0.8f * 255, b * 255));
-                    Pen pen = new Pen(color);
-                    g1.DrawLine(pen, x, y, x + 1, y);
+                    if (colourcycle)
+                    {
+                        h = hue;
+                    }
+                        Color color = HSBColor.FromHSB(new HSBColor(h * 255, 0.8f * 255, b * 255));
+                        Pen pen = new Pen(color);
+                        g1.DrawLine(pen, x, y, x + 1, y);               
                 }
 
             action = true;
+            colourcycle = false;
         }
 
         private float pointcolour(double xwert, double ywert) // color value from 0.0 to 1.0 by iterations
@@ -309,6 +365,29 @@ namespace Assignment
             yende = EY;
             if ((float)((xende - xstart) / (yende - ystart)) != xy)
                 xstart = xende - (yende - ystart) * (double)xy;
+        }
+
+        private void colourPaletteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            this.colorDialog1 = new System.Windows.Forms.ColorDialog();
+            // Show the color dialog.
+            DialogResult result = colorDialog1.ShowDialog();
+            // See if user pressed ok.
+            if (result == DialogResult.OK)
+            {
+                // Set form background to the selected color.
+                Color clr = colorDialog1.Color;
+                test = colorDialog1.Color;
+                Bitmap Result = picture.Clone(new Rectangle(0, 0, picture.Width, picture.Height), PixelFormat.Format8bppIndexed);
+                hue = clr.GetHue();
+                sat = clr.GetSaturation();
+                bright = clr.GetBrightness();
+                colourcycle = true;
+                init();
+                Mandelbrot();
+
+            }
         }
 
 

@@ -57,8 +57,8 @@
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.saveImageToolStripMenuItem,
             this.saveLoadToolStripMenuItem,
-            this.colourCyclingToolStripMenuItem,
-            this.colourPaletteToolStripMenuItem});
+            this.colourPaletteToolStripMenuItem,
+            this.colourCyclingToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
@@ -82,14 +82,14 @@
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // loadToolStripMenuItem
             // 
             this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
-            this.loadToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.loadToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
             this.loadToolStripMenuItem.Text = "Load";
             this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
             // 
@@ -98,12 +98,14 @@
             this.colourCyclingToolStripMenuItem.Name = "colourCyclingToolStripMenuItem";
             this.colourCyclingToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
             this.colourCyclingToolStripMenuItem.Text = "Colour Cycling";
+            this.colourCyclingToolStripMenuItem.Click += new System.EventHandler(this.colourCyclingToolStripMenuItem_Click);
             // 
             // colourPaletteToolStripMenuItem
             // 
             this.colourPaletteToolStripMenuItem.Name = "colourPaletteToolStripMenuItem";
             this.colourPaletteToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
             this.colourPaletteToolStripMenuItem.Text = "Colour Palette";
+            this.colourPaletteToolStripMenuItem.Click += new System.EventHandler(this.colourPaletteToolStripMenuItem_Click);
             // 
             // resetToolStripMenuItem
             // 
