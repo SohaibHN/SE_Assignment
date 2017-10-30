@@ -153,7 +153,7 @@ namespace Assignment
             // g5.DrawImage(bm, 0, 0, x1, y1);
             g1 = e.Graphics;
             g2 = e.Graphics;
-            g1.DrawImage(picture, 0, 0, x1, y1);
+            lock (picture) g1.DrawImage(picture, 0, 0, x1, y1);
 
             if (rectangle == true)
             {
@@ -171,6 +171,7 @@ namespace Assignment
             init();
             start();
             Paint += new PaintEventHandler(Form1_Paint);
+
 
         }
 
@@ -194,6 +195,82 @@ namespace Assignment
 
             // close the stream     
 
+        }
+/*
+        private void startToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+            // Set up background worker object & hook up handlers
+            BackgroundWorker bgWorker;
+            bgWorker = new BackgroundWorker();
+            bgWorker.DoWork += new DoWorkEventHandler(bgWorker_DoWork);
+            bgWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bgWorker_RunWorkerCompleted);
+            bgWorker.RunWorkerAsync();
+
+
+        }
+*/
+        void colour_cycling()
+        {
+            lock (picture) picture = picture.Clone(new Rectangle(0, 0, picture.Width, picture.Height), PixelFormat.Format8bppIndexed);
+            ColorPalette palette = picture.Palette;
+            palette.Entries[0] = Color.Black;
+            for (int i = 1; i < palette.Entries.Length; i++)
+            {
+                // set to whatever colour here...
+                //palette.Entries[i] = Color.FromArgb((i * 7) % 256, (i * 7) % 256, 255);
+
+                palette.Entries[i] = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
+
+                picture.Palette = palette;
+                //Task.Delay(TimeSpan.FromSeconds(2)).Wait();
+                this.Invoke(new Action(() => Refresh()));
+                //Refresh();
+
+                if (i > 220) { i = 1; }
+
+
+
+            }
+
+            picture.Palette = palette;
+
+        }
+
+
+        void bgWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            colour_cycling();
+        }
+
+        void bgWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Error != null)
+            {
+                MessageBox.Show(e.Error.Message);
+            }
+            else
+            {
+                
+            }
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox1.Checked)
+            {
+                // Set up background worker object & hook up handlers
+                BackgroundWorker bgWorker;
+                bgWorker = new BackgroundWorker();
+                bgWorker.DoWork += new DoWorkEventHandler(bgWorker_DoWork);
+                bgWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bgWorker_RunWorkerCompleted);
+                bgWorker.RunWorkerAsync();
+            }
+            else
+            {
+                Application.Restart();
+                Environment.Exit(0);
+            }
         }
 
         private void loadToolStripMenuItem_Click(object sender, EventArgs e)
@@ -223,13 +300,16 @@ namespace Assignment
             for (int i = 1; i < palette.Entries.Length; i++)
             {
                 // set to whatever colour here...
-                palette.Entries[i] = Color.FromArgb((i * 7) % 256, (i * 7) % 256, 255);
-                Color randomColor = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
-                palette.Entries[i] = randomColor;
+                //palette.Entries[i] = Color.FromArgb((i * 7) % 256, (i * 7) % 256, 255);
+                palette.Entries[i] = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
                 //palette.Entries[i] = Color.FromArgb(255, i, i, i);
 
                 picture.Palette = palette;
                 Refresh();
+
+                if ( i > 220) { i = 1; }
+
+
             }
             picture.Palette = palette;
 

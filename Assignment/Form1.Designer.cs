@@ -34,9 +34,11 @@
             this.saveLoadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.colourCyclingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.colourPaletteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.colourCyclingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.colourPaletteToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -44,7 +46,8 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
-            this.resetToolStripMenuItem});
+            this.resetToolStripMenuItem,
+            this.colourPaletteToolStripMenuItem1});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
@@ -93,19 +96,19 @@
             this.loadToolStripMenuItem.Text = "Load";
             this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
             // 
-            // colourCyclingToolStripMenuItem
-            // 
-            this.colourCyclingToolStripMenuItem.Name = "colourCyclingToolStripMenuItem";
-            this.colourCyclingToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
-            this.colourCyclingToolStripMenuItem.Text = "Colour Cycling";
-            this.colourCyclingToolStripMenuItem.Click += new System.EventHandler(this.colourCyclingToolStripMenuItem_Click);
-            // 
             // colourPaletteToolStripMenuItem
             // 
             this.colourPaletteToolStripMenuItem.Name = "colourPaletteToolStripMenuItem";
             this.colourPaletteToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
             this.colourPaletteToolStripMenuItem.Text = "Colour Palette";
             this.colourPaletteToolStripMenuItem.Click += new System.EventHandler(this.colourPaletteToolStripMenuItem_Click);
+            // 
+            // colourCyclingToolStripMenuItem
+            // 
+            this.colourCyclingToolStripMenuItem.Name = "colourCyclingToolStripMenuItem";
+            this.colourCyclingToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.colourCyclingToolStripMenuItem.Text = "Colour Cycling";
+            this.colourCyclingToolStripMenuItem.Click += new System.EventHandler(this.colourCyclingToolStripMenuItem_Click);
             // 
             // resetToolStripMenuItem
             // 
@@ -114,11 +117,29 @@
             this.resetToolStripMenuItem.Text = "Reset";
             this.resetToolStripMenuItem.Click += new System.EventHandler(this.resetToolStripMenuItem_Click);
             // 
+            // colourPaletteToolStripMenuItem1
+            // 
+            this.colourPaletteToolStripMenuItem1.Name = "colourPaletteToolStripMenuItem1";
+            this.colourPaletteToolStripMenuItem1.Size = new System.Drawing.Size(94, 20);
+            this.colourPaletteToolStripMenuItem1.Text = "Colour Palette";
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(531, 5);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(93, 17);
+            this.checkBox1.TabIndex = 1;
+            this.checkBox1.Text = "Colour Cycling";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(624, 511);
+            this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
@@ -145,6 +166,8 @@
         private System.Windows.Forms.ToolStripMenuItem resetToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem colourPaletteToolStripMenuItem1;
+        private System.Windows.Forms.CheckBox checkBox1;
     }
 }
 
