@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -38,7 +39,12 @@
             this.colourCyclingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.colourPaletteToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.blueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.greenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.yellowToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.redDefaultToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.colourCyclingToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -47,7 +53,8 @@
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.resetToolStripMenuItem,
-            this.colourPaletteToolStripMenuItem1});
+            this.colourPaletteToolStripMenuItem1,
+            this.colourCyclingToolStripMenuItem1});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
@@ -119,27 +126,61 @@
             // 
             // colourPaletteToolStripMenuItem1
             // 
+            this.colourPaletteToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.blueToolStripMenuItem,
+            this.greenToolStripMenuItem,
+            this.yellowToolStripMenuItem,
+            this.redDefaultToolStripMenuItem});
             this.colourPaletteToolStripMenuItem1.Name = "colourPaletteToolStripMenuItem1";
             this.colourPaletteToolStripMenuItem1.Size = new System.Drawing.Size(94, 20);
             this.colourPaletteToolStripMenuItem1.Text = "Colour Palette";
+            this.colourPaletteToolStripMenuItem1.Click += new System.EventHandler(this.colourPaletteToolStripMenuItem1_Click);
             // 
-            // checkBox1
+            // blueToolStripMenuItem
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(531, 5);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(93, 17);
-            this.checkBox1.TabIndex = 1;
-            this.checkBox1.Text = "Colour Cycling";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            this.blueToolStripMenuItem.Name = "blueToolStripMenuItem";
+            this.blueToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.blueToolStripMenuItem.Text = "Blue";
+            this.blueToolStripMenuItem.Click += new System.EventHandler(this.blueToolStripMenuItem_Click);
+            // 
+            // greenToolStripMenuItem
+            // 
+            this.greenToolStripMenuItem.Name = "greenToolStripMenuItem";
+            this.greenToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.greenToolStripMenuItem.Text = "Green";
+            this.greenToolStripMenuItem.Click += new System.EventHandler(this.greenToolStripMenuItem_Click);
+            // 
+            // yellowToolStripMenuItem
+            // 
+            this.yellowToolStripMenuItem.Name = "yellowToolStripMenuItem";
+            this.yellowToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.yellowToolStripMenuItem.Text = "Yellow";
+            this.yellowToolStripMenuItem.Click += new System.EventHandler(this.yellowToolStripMenuItem_Click);
+            // 
+            // redDefaultToolStripMenuItem
+            // 
+            this.redDefaultToolStripMenuItem.Name = "redDefaultToolStripMenuItem";
+            this.redDefaultToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.redDefaultToolStripMenuItem.Text = "Red (Default)";
+            this.redDefaultToolStripMenuItem.Click += new System.EventHandler(this.redDefaultToolStripMenuItem_Click);
+            // 
+            // colourCyclingToolStripMenuItem1
+            // 
+            this.colourCyclingToolStripMenuItem1.Name = "colourCyclingToolStripMenuItem1";
+            this.colourCyclingToolStripMenuItem1.Size = new System.Drawing.Size(98, 20);
+            this.colourCyclingToolStripMenuItem1.Text = "Colour Cycling";
+            this.colourCyclingToolStripMenuItem1.Click += new System.EventHandler(this.colourCyclingToolStripMenuItem1_Click);
+            // 
+            // timer1
+            // 
+            this.timer1.Interval = 1000;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(624, 511);
-            this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
@@ -167,7 +208,12 @@
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem colourPaletteToolStripMenuItem1;
-        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.ToolStripMenuItem colourCyclingToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem blueToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem greenToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem yellowToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem redDefaultToolStripMenuItem;
     }
 }
 

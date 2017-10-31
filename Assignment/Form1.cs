@@ -37,7 +37,8 @@ namespace Assignment
         // private Bitmap picture = new Bitmap(@"C:\S13.png");
         private Bitmap picture;
         private Color test;
-
+        private String jcolour;
+        private int j_change; // used for fractal colour palette (allows to be saved to file)
         public HSBColor HSBcol = new HSBColor();
         Rectangle rec = new Rectangle(0, 0, 0, 0);
 
@@ -51,6 +52,7 @@ namespace Assignment
             InitializeComponent();
             //reduces flickering
             this.DoubleBuffered = true;
+            timer1.Stop();
 
         }
 
@@ -153,7 +155,7 @@ namespace Assignment
             // g5.DrawImage(bm, 0, 0, x1, y1);
             g1 = e.Graphics;
             g2 = e.Graphics;
-            lock (picture) g1.DrawImage(picture, 0, 0, x1, y1);
+            g1.DrawImage(picture, 0, 0, x1, y1);
 
             if (rectangle == true)
             {
@@ -190,86 +192,9 @@ namespace Assignment
                 //writer.WriteLine("------------ Custom Frame Size --------------");
                 writer.WriteLine(xzoom);
                 writer.WriteLine(yzoom);
+                writer.WriteLine(j_change);
                 writer.Close();
-            }
-
-            // close the stream     
-
-        }
-/*
-        private void startToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-            // Set up background worker object & hook up handlers
-            BackgroundWorker bgWorker;
-            bgWorker = new BackgroundWorker();
-            bgWorker.DoWork += new DoWorkEventHandler(bgWorker_DoWork);
-            bgWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bgWorker_RunWorkerCompleted);
-            bgWorker.RunWorkerAsync();
-
-
-        }
-*/
-        void colour_cycling()
-        {
-            lock (picture) picture = picture.Clone(new Rectangle(0, 0, picture.Width, picture.Height), PixelFormat.Format8bppIndexed);
-            ColorPalette palette = picture.Palette;
-            palette.Entries[0] = Color.Black;
-            for (int i = 1; i < palette.Entries.Length; i++)
-            {
-                // set to whatever colour here...
-                //palette.Entries[i] = Color.FromArgb((i * 7) % 256, (i * 7) % 256, 255);
-
-                palette.Entries[i] = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
-
-                picture.Palette = palette;
-                //Task.Delay(TimeSpan.FromSeconds(2)).Wait();
-                this.Invoke(new Action(() => Refresh()));
-                //Refresh();
-
-                if (i > 220) { i = 1; }
-
-
-
-            }
-
-            picture.Palette = palette;
-
-        }
-
-
-        void bgWorker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            colour_cycling();
-        }
-
-        void bgWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            if (e.Error != null)
-            {
-                MessageBox.Show(e.Error.Message);
-            }
-            else
-            {
-                
-            }
-        }
-
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
-        {
-            if (checkBox1.Checked)
-            {
-                // Set up background worker object & hook up handlers
-                BackgroundWorker bgWorker;
-                bgWorker = new BackgroundWorker();
-                bgWorker.DoWork += new DoWorkEventHandler(bgWorker_DoWork);
-                bgWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bgWorker_RunWorkerCompleted);
-                bgWorker.RunWorkerAsync();
-            }
-            else
-            {
-                Application.Restart();
-                Environment.Exit(0);
+                // close the stream  
             }
         }
 
@@ -284,10 +209,68 @@ namespace Assignment
                 string[] lines = System.IO.File.ReadAllLines(ofd.FileName);
                 xzoom = Convert.ToDouble(lines[0]);
                 yzoom = Convert.ToDouble(lines[1]);
+                j_change = Convert.ToInt32(lines[2]);
                 init();
                 Mandelbrot();
 
             }
+        }
+
+        private void colourCyclingToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (timer1.Enabled)
+            {
+                timer1.Stop();
+            }
+            else
+            {
+                timer1.Start();
+
+            }
+        }
+
+        // changes j value for palette colour changes
+
+        private void blueToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            j_change = 150;
+            init();
+            Mandelbrot();
+        }
+
+        private void greenToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            j_change = 60;
+            init();
+            Mandelbrot();
+        }
+
+        private void yellowToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            j_change = 30;
+            init();
+            Mandelbrot();
+        }
+
+        private void redDefaultToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            j_change = 0;
+            init();
+            Mandelbrot();
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            picture = picture.Clone(new Rectangle(0, 0, picture.Width, picture.Height), PixelFormat.Format8bppIndexed);
+            ColorPalette palette = picture.Palette;
+            palette.Entries[0] = Color.Black;
+            for (int i = 1; i < palette.Entries.Length; i++)
+            {
+                palette.Entries[i] = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256)); // generates random colour from rgb
+                picture.Palette = palette;
+                Refresh();
+            }
+            picture.Palette = palette;
         }
 
         private void colourCyclingToolStripMenuItem_Click(object sender, EventArgs e)
@@ -299,46 +282,12 @@ namespace Assignment
             palette.Entries[0] = Color.Black;
             for (int i = 1; i < palette.Entries.Length; i++)
             {
-                // set to whatever colour here...
-                //palette.Entries[i] = Color.FromArgb((i * 7) % 256, (i * 7) % 256, 255);
                 palette.Entries[i] = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
-                //palette.Entries[i] = Color.FromArgb(255, i, i, i);
-
                 picture.Palette = palette;
                 Refresh();
-
-                if ( i > 220) { i = 1; }
-
-
+               // if ( i > 220) { i = 1; }
             }
             picture.Palette = palette;
-
-
-
-        }
-
-        public Color FromHsv(double hue, double saturation, double value)
-        {
-            int hi = Convert.ToInt32(Math.Floor(hue / 60)) % 6;
-            double f = hue / 60 - Math.Floor(hue / 60);
-            value = value * 255;
-            int v = Convert.ToInt32(value);
-            int p = Convert.ToInt32(value * (1 - saturation));
-            int q = Convert.ToInt32(value * (1 - f * saturation));
-            int t = Convert.ToInt32(value * (1 - (1 - f) * saturation));
-
-            if (hi == 0)
-                return Color.FromArgb(255, v, t, p);
-            else if (hi == 1)
-                return Color.FromArgb(255, q, v, p);
-            else if (hi == 2)
-                return Color.FromArgb(255, p, v, t);
-            else if (hi == 3)
-                return Color.FromArgb(255, p, q, v);
-            else if (hi == 4)
-                return Color.FromArgb(255, t, p, v);
-            else
-                return Color.FromArgb(255, v, p, q);
         }
 
 
@@ -365,6 +314,7 @@ namespace Assignment
 
         private void resetToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            j_change = 0;
             init();
             start();
         }
@@ -425,7 +375,7 @@ namespace Assignment
         private float pointcolour(double xwert, double ywert) // color value from 0.0 to 1.0 by iterations
         {
             double r = 0.0, i = 0.0, m = 0.0;
-            int j = 0;
+            int j = j_change;
 
             while ((j < MAX) && (m < 4.0))
             {
@@ -468,6 +418,11 @@ namespace Assignment
                 Mandelbrot();
 
             }
+        }
+
+        private void colourPaletteToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+
         }
 
 
