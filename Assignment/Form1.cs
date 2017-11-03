@@ -36,7 +36,6 @@ namespace Assignment
         private static float xy, hue, bright, sat;
         // private Bitmap picture = new Bitmap(@"C:\S13.png");
         private Bitmap picture;
-        private Color test;
         private String jcolour;
         private int j_change; // used for fractal colour palette (allows to be saved to file)
         public HSBColor HSBcol = new HSBColor();
@@ -50,8 +49,7 @@ namespace Assignment
         public Form1()
         {
             InitializeComponent();
-            //reduces flickering
-            this.DoubleBuffered = true;
+            this.DoubleBuffered = true; // stops flickering issues with zooms/animations
             timer1.Stop();
 
         }
@@ -150,14 +148,10 @@ namespace Assignment
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            //put bitmap on window
-            //Graphics g5 = e.Graphics;
-            // g5.DrawImage(bm, 0, 0, x1, y1);
             g1 = e.Graphics;
-            g2 = e.Graphics;
             g1.DrawImage(picture, 0, 0, x1, y1);
 
-            if (rectangle == true)
+            if (rectangle == true) // used for zoom box drawing
             {
                 using (Pen pen = new Pen(Color.White, 2))
                 {
@@ -172,10 +166,14 @@ namespace Assignment
 
             init();
             start();
-            Paint += new PaintEventHandler(Form1_Paint);
+            Paint += new PaintEventHandler(Form1_Paint); // used to specify which method is used for paint
 
 
         }
+
+        //
+        // SAVE/LOAD DETAILS TO/FROM TEXT FILE
+        //
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -207,11 +205,19 @@ namespace Assignment
             if (ofd.ShowDialog() == DialogResult.OK)
             {
                 string[] lines = System.IO.File.ReadAllLines(ofd.FileName);
-                xzoom = Convert.ToDouble(lines[0]);
-                yzoom = Convert.ToDouble(lines[1]);
-                j_change = Convert.ToInt32(lines[2]);
-                init();
-                Mandelbrot();
+                try
+                {
+                    xzoom = Convert.ToDouble(lines[0]);
+                    yzoom = Convert.ToDouble(lines[1]); // both used for zoom amount
+                    j_change = Convert.ToInt32(lines[2]); // used for colour state
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("File is incorrect format, please use a correct format", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+                init(); //resets necessary values
+                Mandelbrot(); //reloads mandlebrot
 
             }
         }
@@ -221,6 +227,8 @@ namespace Assignment
             if (timer1.Enabled)
             {
                 timer1.Stop();
+                init();
+                Mandelbrot();
             }
             else
             {
@@ -290,7 +298,9 @@ namespace Assignment
             picture.Palette = palette;
         }
 
-
+        // SAVE BITMAP TO IMAGE FILE 
+        // 2 TYPES - JPEG & PNG
+        //
         private void saveImageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var sfd = new SaveFileDialog();
@@ -312,14 +322,17 @@ namespace Assignment
             }
         }
 
+        //
+        // RESET METHODS
+        //
         private void resetToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            j_change = 0;
+            j_change = 0; //resets colours to 0 if already changed
             init();
             start();
         }
 
-        public void init()
+        public void init() // resets values for painting
         {
             x1 = 640;
             y1 = 480;
@@ -339,20 +352,23 @@ namespace Assignment
             Mandelbrot();
         }
 
-        public void stop()
+        private void initvalues() // reset start values
         {
+            xstart = SX;
+            ystart = SY;
+            xende = EX;
+            yende = EY;
+            if ((float)((xende - xstart) / (yende - ystart)) != xy)
+                xstart = xende - (yende - ystart) * (double)xy;
         }
 
-        public void destroy()
-        {
-
-        }
-
+        //
+        // DRAW MANDLEBROT METHOD
+        //
         private void Mandelbrot() // calculate all points
         {
             int x, y;
             float h, b;
-            //colourcycle = false;
             action = false;
             for (x = 0; x < x1; x += 2)
                 for (y = 0; y < y1; y++)
@@ -368,8 +384,7 @@ namespace Assignment
                         g1.DrawLine(pen, x, y, x + 1, y);               
                 }
 
-            action = true;
-            colourcycle = false;
+            action = true; // resets action value to true for other methods
         }
 
         private float pointcolour(double xwert, double ywert) // color value from 0.0 to 1.0 by iterations
@@ -386,45 +401,6 @@ namespace Assignment
             }
             return (float)j / (float)MAX;
         }
-
-        private void initvalues() // reset start values
-        {
-            xstart = SX;
-            ystart = SY;
-            xende = EX;
-            yende = EY;
-            if ((float)((xende - xstart) / (yende - ystart)) != xy)
-                xstart = xende - (yende - ystart) * (double)xy;
-        }
-
-        private void colourPaletteToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-            this.colorDialog1 = new System.Windows.Forms.ColorDialog();
-            // Show the color dialog.
-            DialogResult result = colorDialog1.ShowDialog();
-            // See if user pressed ok.
-            if (result == DialogResult.OK)
-            {
-                // Set form background to the selected color.
-                Color clr = colorDialog1.Color;
-                test = colorDialog1.Color;
-                Bitmap Result = picture.Clone(new Rectangle(0, 0, picture.Width, picture.Height), PixelFormat.Format8bppIndexed);
-                hue = clr.GetHue();
-                sat = clr.GetSaturation();
-                bright = clr.GetBrightness();
-                colourcycle = true;
-                init();
-                Mandelbrot();
-
-            }
-        }
-
-        private void colourPaletteToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-
-        }
-
 
         private void Form1_MouseDown(object sender, MouseEventArgs e)
         {

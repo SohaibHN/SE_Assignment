@@ -35,8 +35,6 @@
             this.saveLoadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.colourPaletteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.colourCyclingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.colourPaletteToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.blueToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -66,9 +64,7 @@
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.saveImageToolStripMenuItem,
-            this.saveLoadToolStripMenuItem,
-            this.colourPaletteToolStripMenuItem,
-            this.colourCyclingToolStripMenuItem});
+            this.saveLoadToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
@@ -76,7 +72,7 @@
             // saveImageToolStripMenuItem
             // 
             this.saveImageToolStripMenuItem.Name = "saveImageToolStripMenuItem";
-            this.saveImageToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.saveImageToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.saveImageToolStripMenuItem.Text = "Save Image";
             this.saveImageToolStripMenuItem.Click += new System.EventHandler(this.saveImageToolStripMenuItem_Click);
             // 
@@ -86,7 +82,7 @@
             this.saveToolStripMenuItem,
             this.loadToolStripMenuItem});
             this.saveLoadToolStripMenuItem.Name = "saveLoadToolStripMenuItem";
-            this.saveLoadToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.saveLoadToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.saveLoadToolStripMenuItem.Text = "Save/Load";
             // 
             // saveToolStripMenuItem
@@ -103,20 +99,6 @@
             this.loadToolStripMenuItem.Text = "Load";
             this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
             // 
-            // colourPaletteToolStripMenuItem
-            // 
-            this.colourPaletteToolStripMenuItem.Name = "colourPaletteToolStripMenuItem";
-            this.colourPaletteToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
-            this.colourPaletteToolStripMenuItem.Text = "Colour Palette";
-            this.colourPaletteToolStripMenuItem.Click += new System.EventHandler(this.colourPaletteToolStripMenuItem_Click);
-            // 
-            // colourCyclingToolStripMenuItem
-            // 
-            this.colourCyclingToolStripMenuItem.Name = "colourCyclingToolStripMenuItem";
-            this.colourCyclingToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
-            this.colourCyclingToolStripMenuItem.Text = "Colour Cycling";
-            this.colourCyclingToolStripMenuItem.Click += new System.EventHandler(this.colourCyclingToolStripMenuItem_Click);
-            // 
             // resetToolStripMenuItem
             // 
             this.resetToolStripMenuItem.Name = "resetToolStripMenuItem";
@@ -132,9 +114,9 @@
             this.yellowToolStripMenuItem,
             this.redDefaultToolStripMenuItem});
             this.colourPaletteToolStripMenuItem1.Name = "colourPaletteToolStripMenuItem1";
+            this.colourPaletteToolStripMenuItem1.ShowShortcutKeys = false;
             this.colourPaletteToolStripMenuItem1.Size = new System.Drawing.Size(94, 20);
             this.colourPaletteToolStripMenuItem1.Text = "Colour Palette";
-            this.colourPaletteToolStripMenuItem1.Click += new System.EventHandler(this.colourPaletteToolStripMenuItem1_Click);
             // 
             // blueToolStripMenuItem
             // 
@@ -202,18 +184,16 @@
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveImageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveLoadToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem colourCyclingToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem colourPaletteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem resetToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem colourPaletteToolStripMenuItem1;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.ToolStripMenuItem colourCyclingToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem blueToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem greenToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem yellowToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem redDefaultToolStripMenuItem;
+        internal System.Windows.Forms.ToolStripMenuItem colourPaletteToolStripMenuItem1;
     }
 }
 
