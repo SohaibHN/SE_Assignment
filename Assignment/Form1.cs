@@ -16,41 +16,28 @@ namespace Assignment
     public partial class Form1 : Form
     {
 
-        //Bitmap bm = new Bitmap(@"C:\test.jpg");
-        //Graphics g5;
-        private Random rnd = new Random();
-        private const int MAX = 256;
-        //  max iterations
-        private const double SX = -2.025;
-        //  start value real
-        private const double SY = -1.125;
-        //  start value imaginary
-        private const double EX = 0.6;
-        //  end value real
-        private const double EY = 1.125;
-        //  end value imaginary
+        private Random rnd = new Random(); //used for colour cycling
+        private const int MAX = 256; //  max iterations
+        private const double SX = -2.025; //  start value real
+        private const double SY = -1.125; //  start value imaginary
+        private const double EX = 0.6;  //  end value real
+        private const double EY = 1.125; //  end value imaginary
         private static int x1, y1, xs, ys, xe, ye;
         private static double xstart, ystart, xende, yende, xzoom, yzoom;
-        private static bool action, rectangle, finished, colourcycle;
+        private static bool action, rectangle;
         private static bool mousedragged = false;
-        private static float xy, hue, bright, sat;
-        // private Bitmap picture = new Bitmap(@"C:\S13.png");
+        private static float xy;
         private Bitmap picture;
-        private String jcolour;
         private int j_change; // used for fractal colour palette (allows to be saved to file)
         public HSBColor HSBcol = new HSBColor();
         Rectangle rec = new Rectangle(0, 0, 0, 0);
-
         private Graphics g1;
-        private Graphics g2;
-        private System.Windows.Forms.ColorDialog colorDialog1;
-
-
+        
         public Form1()
         {
             InitializeComponent();
             this.DoubleBuffered = true; // stops flickering issues with zooms/animations
-            timer1.Stop();
+            timer1.Stop(); //ensures timer is stopped on form load just in case
 
         }
 
@@ -156,19 +143,15 @@ namespace Assignment
                 using (Pen pen = new Pen(Color.White, 2))
                 {
                     g1.DrawRectangle(pen, rec);
-                    
                 }
             }
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
             init();
             start();
             Paint += new PaintEventHandler(Form1_Paint); // used to specify which method is used for paint
-
-
         }
 
         //
@@ -187,7 +170,7 @@ namespace Assignment
             {
                 //Save file to file name specified to SafeFileDialog
                 StreamWriter writer = new StreamWriter(sfd.FileName);
-                //writer.WriteLine("------------ Custom Frame Size --------------");
+                //writer.WriteLine("------------ Custom Details --------------");
                 writer.WriteLine(xzoom);
                 writer.WriteLine(yzoom);
                 writer.WriteLine(j_change);
@@ -214,6 +197,7 @@ namespace Assignment
                 catch (Exception)
                 {
                     MessageBox.Show("File is incorrect format, please use a correct format", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    //error message on incorrect file types
                 }
 
                 init(); //resets necessary values
@@ -221,6 +205,34 @@ namespace Assignment
 
             }
         }
+
+        // SAVE BITMAP TO IMAGE FILE 
+        // 2 TYPES - JPEG & PNG
+        //
+        private void saveImageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var sfd = new SaveFileDialog();
+            sfd.Filter = "png(*.png;)|*.png;| jpg(*jpg)|*.jpg";
+            sfd.AddExtension = true;
+            if (sfd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                switch (Path.GetExtension(sfd.FileName).ToUpper())
+                {
+                    case ".JPG":
+                        picture.Save(sfd.FileName, System.Drawing.Imaging.ImageFormat.Jpeg);
+                        break;
+                    case ".PNG":
+                        picture.Save(sfd.FileName, System.Drawing.Imaging.ImageFormat.Png);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        //
+        // COLOUR CYCLING METHODS 
+        //
 
         private void colourCyclingToolStripMenuItem1_Click(object sender, EventArgs e)
         {
@@ -237,7 +249,26 @@ namespace Assignment
             }
         }
 
-        // changes j value for palette colour changes
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            picture = picture.Clone(new Rectangle(0, 0, picture.Width, picture.Height), PixelFormat.Format8bppIndexed);
+            // CLONES BITMAP AND CONVERTS TO INDEXED IMAGE AT SAME TIME
+            ColorPalette palette = picture.Palette;
+            //CREATES PALETTE USED TO CHANGE COLOUR
+            palette.Entries[0] = Color.Black;
+            //SETS FIRST ENTRY TO BLACK SO WHOLE IMAGE WILL NOT BE BLACK
+            for (int i = 1; i < palette.Entries.Length; i++)
+            {
+                palette.Entries[i] = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256)); // generates random colour from rgb
+                picture.Palette = palette; // assigns new pallete colour to the bitmap
+                Refresh();
+            }
+            picture.Palette = palette;
+        }
+
+        //
+        // CHANGES J VALUE FOR PALETTE COLOUR CHANGES
+        //
 
         private void blueToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -267,61 +298,6 @@ namespace Assignment
             Mandelbrot();
         }
 
-        private void timer1_Tick(object sender, EventArgs e)
-        {
-            picture = picture.Clone(new Rectangle(0, 0, picture.Width, picture.Height), PixelFormat.Format8bppIndexed);
-            ColorPalette palette = picture.Palette;
-            palette.Entries[0] = Color.Black;
-            for (int i = 1; i < palette.Entries.Length; i++)
-            {
-                palette.Entries[i] = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256)); // generates random colour from rgb
-                picture.Palette = palette;
-                Refresh();
-            }
-            picture.Palette = palette;
-        }
-
-        private void colourCyclingToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            
-
-            picture = picture.Clone(new Rectangle(0, 0, picture.Width, picture.Height), PixelFormat.Format8bppIndexed);
-            ColorPalette palette = picture.Palette;
-            palette.Entries[0] = Color.Black;
-            for (int i = 1; i < palette.Entries.Length; i++)
-            {
-                palette.Entries[i] = Color.FromArgb(rnd.Next(256), rnd.Next(256), rnd.Next(256));
-                picture.Palette = palette;
-                Refresh();
-               // if ( i > 220) { i = 1; }
-            }
-            picture.Palette = palette;
-        }
-
-        // SAVE BITMAP TO IMAGE FILE 
-        // 2 TYPES - JPEG & PNG
-        //
-        private void saveImageToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var sfd = new SaveFileDialog();
-            sfd.Filter = "png(*.png;)|*.png;| jpg(*jpg)|*.jpg";
-            sfd.AddExtension = true;
-            if (sfd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                switch (Path.GetExtension(sfd.FileName).ToUpper())
-                {
-                    case ".JPG":
-                        picture.Save(sfd.FileName, System.Drawing.Imaging.ImageFormat.Jpeg);
-                        break;
-                    case ".PNG":
-                        picture.Save(sfd.FileName, System.Drawing.Imaging.ImageFormat.Png);
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-
         //
         // RESET METHODS
         //
@@ -329,7 +305,7 @@ namespace Assignment
         {
             j_change = 0; //resets colours to 0 if already changed
             init();
-            start();
+            start(); //called instead of mandlebrot to reset values of zoom
         }
 
         public void init() // resets values for painting
@@ -342,7 +318,7 @@ namespace Assignment
 
         }
 
-        public void start()
+        public void start() //default values
         {
             action = false;
             rectangle = false;
@@ -375,15 +351,10 @@ namespace Assignment
                 {
                     h = pointcolour(xstart + xzoom * (double)x, ystart + yzoom * (double)y);
                     b = 1.0f - h * h; //brightness of the mandelbrot
-                    if (colourcycle)
-                    {
-                        h = hue;
-                    }
-                        Color color = HSBColor.FromHSB(new HSBColor(h * 255, 0.8f * 255, b * 255));
-                        Pen pen = new Pen(color);
-                        g1.DrawLine(pen, x, y, x + 1, y);               
+                    Color color = HSBColor.FromHSB(new HSBColor(h * 255, 0.8f * 255, b * 255));
+                    Pen pen = new Pen(color);
+                    g1.DrawLine(pen, x, y, x + 1, y);
                 }
-
             action = true; // resets action value to true for other methods
         }
 
@@ -402,16 +373,18 @@ namespace Assignment
             return (float)j / (float)MAX;
         }
 
+        //
+        // METHODS FOR ZOOMING
+        //
+
         private void Form1_MouseDown(object sender, MouseEventArgs e)
         {
             rec = new Rectangle(e.X, e.Y, 0, 0);
-
             if (action)
             {
-                xs = e.X;
+                xs = e.X; //gets mouse x and y postion on mouse down
                 ys = e.Y;
                 rectangle = true;
-                
             }
             Refresh();
         }
@@ -421,7 +394,7 @@ namespace Assignment
 
             if (e.Button == MouseButtons.Left)
             {
-                // rec = new Rectangle(rec.Left, rec.Top, e.X - rec.Left, e.Y - rec.Top);
+                
                 rec.Width = e.X - rec.X;
                 rec.Height = e.Y - rec.Y;
 
@@ -446,44 +419,53 @@ namespace Assignment
     private void Form1_MouseUp(object sender, MouseEventArgs e)
     {
             int z, w;
-            if (mousedragged && action)
+
+            if (e.Button == MouseButtons.Right)
             {
-                
-                xe = e.X;
-                ye = e.Y;
-                if (xs > xe)
+                init();
+                start(); //called instead of mandlebrot to reset values of zoom
+            }
+            else
+            {
+                if (mousedragged && action)
                 {
-                    z = xs;
-                    xs = xe;
-                    xe = z;
-                }
-                if (ys > ye)
-                {
-                    z = ys;
-                    ys = ye;
-                    ye = z;
-                }
-                w = (xe - xs);
-                z = (ye - ys);
-                if ((w < 2) && (z < 2)) initvalues();
-                else
-                {
-                    if (((float)w > (float)z * xy)) ye = (int)((float)ys + (float)w / xy);
-                    else xe = (int)((float)xs + (float)z * xy);
-                    xende = xstart + xzoom * (double)xe;
-                    yende = ystart + yzoom * (double)ye;
-                    xstart += xzoom * (double)xs;
-                    ystart += yzoom * (double)ys;
-                }
-                if (e.Button == MouseButtons.Left)
-                {
-                    xzoom = (xende - xstart) / (double)x1;
-                    yzoom = (yende - ystart) / (double)y1;
-                    rectangle = false;
-                    mousedragged = false;
-                    init();
-                    Mandelbrot();
-                    Refresh();
+
+                    xe = e.X;
+                    ye = e.Y;
+                    if (xs > xe)
+                    {
+                        z = xs;
+                        xs = xe;
+                        xe = z;
+                    }
+                    if (ys > ye)
+                    {
+                        z = ys;
+                        ys = ye;
+                        ye = z;
+                    }
+                    w = (xe - xs);
+                    z = (ye - ys);
+                    if ((w < 2) && (z < 2)) initvalues();
+                    else
+                    {
+                        if (((float)w > (float)z * xy)) ye = (int)((float)ys + (float)w / xy);
+                        else xe = (int)((float)xs + (float)z * xy);
+                        xende = xstart + xzoom * (double)xe;
+                        yende = ystart + yzoom * (double)ye;
+                        xstart += xzoom * (double)xs;
+                        ystart += yzoom * (double)ys;
+                    }
+                    if (e.Button == MouseButtons.Left) //only zooms on left click dragged
+                    {
+                        xzoom = (xende - xstart) / (double)x1;
+                        yzoom = (yende - ystart) / (double)y1;
+                        rectangle = false;
+                        mousedragged = false;
+                        init();
+                        Mandelbrot();
+                        Refresh();
+                    }
                 }
             }
         }
